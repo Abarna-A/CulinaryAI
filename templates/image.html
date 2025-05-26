@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to Recipe | CulinaryAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary: #FF9A8B;
+            --primary-gradient: linear-gradient(45deg, #FF9A8B 0%, #FF6B95 50%, #FF8E53 100%);
+            --dark: #2E2E3A;
+            --light: #F8F9FA;
+            --accent: #6C63FF;
+            --success: #4CAF50;
+            --warning: #FFC107;
+            --error: #F44336;
+            --text-dark: #333333;
+            --text-light: #F8F9FA;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.16);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            background-image: url('https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=2535&auto=format&fit=crop');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(46, 46, 58, 0.85);
+            z-index: -1;
+        }
+
+        #app {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding-top: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .logo-icon {
+            background: var(--primary-gradient);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .logo-icon i {
+            font-size: 24px;
+            color: white;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.75rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .glass-container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            padding: 2rem;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            color: var(--accent);
+        }
+
+        .section-heading {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            color: white;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-heading::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 3px;
+            background: var(--primary-gradient);
+            margin: 0.5rem auto 0;
+            border-radius: 3px;
+        }
+
+        .upload-container {
+            margin-top: 1.5rem;
+        }
+
+        .upload-box {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-md);
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .upload-box.highlight {
+            border-color: var(--accent);
+            background: rgba(108, 99, 255, 0.1);
+        }
+
+        .upload-box i {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .upload-box p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.5rem;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        #image-preview-container {
+            margin-top: 1.5rem;
+            display: none;
+        }
+
+        .image-preview {
+            position: relative;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            height: 300px;
+            margin-bottom: 1.5rem;
+        }
+
+        #preview-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #remove-image {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        #remove-image:hover {
+            background: var(--error);
+        }
+
+        #analyze-btn {
+            width: 100%;
+        }
+
+        #image-analysis-result {
+            margin-top: 1.5rem;
+            display: none;
+        }
+
+        .analysis-loading {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .analysis-result {
+            display: none;
+        }
+
+        .analysis-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .recipe-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: white;
+            margin: 0 0 1.5rem 0;
+        }
+
+        .ingredients-list, .steps-list {
+            padding-left: 1.5rem;
+        }
+
+        .ingredients-list {
+            list-style-type: none;
+        }
+
+        .ingredients-list li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .ingredients-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        .steps-list {
+            counter-reset: step-counter;
+            list-style-type: none;
+        }
+
+        .steps-list li {
+            counter-increment: step-counter;
+            margin-bottom: 1rem;
+            position: relative;
+            padding-left: 2.5rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .steps-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: var(--accent);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .chef-tips {
+            background: rgba(255, 154, 139, 0.1);
+            padding: 1.25rem;
+            border-radius: var(--radius-sm);
+            border-left: 4px solid var(--primary);
+            margin-top: 2rem;
+        }
+
+        .chef-tips .section-title {
+            color: var(--primary);
+        }
+
+        .chef-tips p {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .error {
+            color: var(--error);
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .error i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .error p {
+            margin-top: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 0.875rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn i {
+            font-size: 1.25rem;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Chatbot Interface */
+        #chat-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            transition: var(--transition);
+            display: none;
+        }
+
+        #chat-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        #chat-toggle i {
+            font-size: 1.5rem;
+        }
+
+        #chat-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 380px;
+            max-width: calc(100% - 4rem);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(20px);
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            z-index: 1001;
+        }
+
+        #chat-container.active {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #chat-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        #chat-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #chat-header i {
+            font-size: 1.25rem;
+        }
+
+        #chat-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        #chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background: rgba(46, 46, 58, 0.95);
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) transparent;
+        }
+
+        #chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #chat-messages::-webkit-scrollbar-thumb {
+            background-color: var(--accent);
+            border-radius: 3px;
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            max-width: 80%;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.9375rem;
+            line-height: 1.5;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            background: rgba(108, 99, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(108, 99, 255, 0.3);
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .assistant-message {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-sm);
+            border-bottom-left-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            margin-right: 4px;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+            margin-right: 0;
+        }
+
+        @keyframes typingAnimation {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.6; }
+            30% { transform: translateY(-5px); opacity: 1; }
+        }
+
+        #chat-input-container {
+            display: flex;
+            padding: 1rem;
+            background: rgba(46, 46, 58, 0.98);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #chat-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-family: inherit;
+            font-size: 0.9375rem;
+            transition: var(--transition);
+        }
+
+        #chat-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        #chat-send {
+            background: var(--accent);
+            color: white;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            margin-left: 0.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #chat-send:hover {
+            background: #5a52e0;
+        }
+
+        #chat-send i {
+            font-size: 1.25rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            #chat-container {
+                width: calc(100% - 2rem);
+                right: 1rem;
+                bottom: 1rem;
+            }
+
+            #chat-toggle {
+                right: 1rem;
+                bottom: 1rem;
+            }
+        }
+
+        .animate-pop {
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <h1 class="animate__animated animate__fadeIn">CulinaryAI</h1>
+            </div>
+            <p class="subtitle animate__animated animate__fadeIn animate__delay-1s">Generate recipes from food images</p>
+        </header>
+
+        <a href="/" class="back-btn animate__animated animate__fadeIn">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+
+        <div class="glass-container animate__animated animate__fadeIn">
+            <h2 class="section-heading">
+                <i class="fas fa-camera"></i> Image to Recipe
+            </h2>
+            
+            <div class="upload-container">
+                <div id="drop-area" class="upload-box">
+                    <input type="file" id="file-input" accept="image/*" capture="environment">
+                    <label for="file-input">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Drag & drop food photo or click to upload</p>
+                    </label>
+                </div>
+                
+                <div id="image-preview-container" style="display: none;">
+                    <div class="image-preview">
+                        <img id="preview-image" src="" alt="Uploaded food image">
+                        <button id="remove-image" class="btn-icon">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <button id="analyze-btn" class="btn">
+                        <i class="fas fa-search"></i> Analyze Image
+                    </button>
+                </div>
+                
+                <div id="image-analysis-result" style="display: none;">
+                    <div class="analysis-loading">
+                        <div class="loading-spinner"></div>
+                        <p>Analyzing your dish...</p>
+                    </div>
+                    
+                    <div class="analysis-result" style="display: none;">
+                        <h3 id="identified-dish" class="recipe-title"></h3>
+                        
+                        <div class="analysis-section">
+                            <h4 class="section-title">
+                                <i class="fas fa-list"></i> Identified Ingredients
+                            </h4>
+                            <ul id="identified-ingredients" class="ingredients-list"></ul>
+                        </div>
+                        
+                        <div class="analysis-section">
+                            <h4 class="section-title">
+                                <i class="fas fa-blender"></i> Cooking Method
+                            </h4>
+                            <p id="cooking-method"></p>
+                        </div>
+                        
+                        <div class="recipe-section">
+                            <h3 class="section-title">
+                                <i class="fas fa-book-open"></i> Generated Recipe
+                            </h3>
+                            <ol id="generated-steps" class="steps-list"></ol>
+                        </div>
+                        
+                        <div class="chef-tips">
+                            <h3 class="section-title">
+                                <i class="fas fa-lightbulb"></i> Chef's Notes
+                            </h3>
+                            <p id="chef-notes"></p>
+                        </div>
+                        
+                        <button id="save-recipe-btn" class="btn mt-2">
+                            <i class="fas fa-save"></i> Save This Recipe
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot Interface -->
+    <button id="chat-toggle">
+        <i class="fas fa-comment-dots"></i>
+    </button>
+
+    <div id="chat-container">
+        <div id="chat-header">
+            <h3><i class="fas fa-robot"></i> Recipe Assistant</h3>
+            <button id="chat-close"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="chat-messages"></div>
+        <div id="chat-input-container">
+            <input type="text" id="chat-input" placeholder="Ask about alternatives or improvements...">
+            <button id="chat-send"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const app = {
+            elements: {
+                dropArea: document.getElementById('drop-area'),
+                fileInput: document.getElementById('file-input'),
+                previewImage: document.getElementById('preview-image'),
+                removeImageBtn: document.getElementById('remove-image'),
+                analyzeBtn: document.getElementById('analyze-btn'),
+                imageAnalysisResult: document.getElementById('image-analysis-result'),
+                analysisResult: document.querySelector('.analysis-result'),
+                analysisLoading: document.querySelector('.analysis-loading'),
+                identifiedDish: document.getElementById('identified-dish'),
+                identifiedIngredients: document.getElementById('identified-ingredients'),
+                cookingMethod: document.getElementById('cooking-method'),
+                generatedSteps: document.getElementById('generated-steps'),
+                chefNotes: document.getElementById('chef-notes'),
+                saveRecipeBtn: document.getElementById('save-recipe-btn'),
+                imagePreviewContainer: document.getElementById('image-preview-container'),
+                chatToggle: document.getElementById('chat-toggle'),
+                chatContainer: document.getElementById('chat-container'),
+                chatClose: document.getElementById('chat-close'),
+                chatMessages: document.getElementById('chat-messages'),
+                chatInput: document.getElementById('chat-input'),
+                chatSend: document.getElementById('chat-send')
+            },
+            state: {
+                currentRecipe: ''
+            }
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Chat toggle
+            app.elements.chatToggle.addEventListener('click', toggleChat);
+            app.elements.chatClose.addEventListener('click', toggleChat);
+            
+            // Send message on button click or Enter key
+            app.elements.chatSend.addEventListener('click', sendMessage);
+            app.elements.chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendMessage();
+            });
+            
+            // Image upload handling
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                app.elements.dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                app.elements.dropArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                app.elements.dropArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            app.elements.dropArea.addEventListener('drop', handleDrop, false);
+            app.elements.dropArea.addEventListener('click', () => app.elements.fileInput.click());
+            app.elements.fileInput.addEventListener('change', handleFiles, false);
+            app.elements.removeImageBtn.addEventListener('click', removeImage);
+            app.elements.analyzeBtn.addEventListener('click', analyzeImage);
+            app.elements.saveRecipeBtn.addEventListener('click', saveImageRecipe);
+        }
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function highlight() {
+            app.elements.dropArea.classList.add('highlight');
+        }
+
+        function unhighlight() {
+            app.elements.dropArea.classList.remove('highlight');
+        }
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                handleFiles({target: {files}});
+            }
+        }
+
+        function handleFiles(e) {
+            const files = e.target.files || (e.dataTransfer && e.dataTransfer.files);
+            if (!files || files.length === 0) return;
+
+            const file = files[0];
+            if (file && file.type.match('image.*')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    app.elements.previewImage.src = e.target.result;
+                    app.elements.imagePreviewContainer.style.display = 'block';
+                    app.elements.dropArea.style.display = 'none';
+                }
+                reader.onerror = function(error) {
+                    console.error('Error reading file:', error);
+                    alert('Error loading image. Please try another file.');
+                }
+                reader.readAsDataURL(file);
+            } else {
+                alert('Please select an image file (JPEG, PNG, etc.)');
+            }
+        }
+
+        function removeImage() {
+            app.elements.previewImage.src = '';
+            app.elements.fileInput.value = '';
+            app.elements.imagePreviewContainer.style.display = 'none';
+            app.elements.imageAnalysisResult.style.display = 'none';
+            app.elements.dropArea.style.display = 'block';
+        }
+
+        // Toggle chat visibility
+        function toggleChat() {
+            app.elements.chatContainer.classList.toggle('active');
+        }
+
+        // Analyze uploaded image
+        async function analyzeImage() {
+            const file = app.elements.fileInput.files[0];
+            if (!file) {
+                alert('Please select an image first');
+                return;
+            }
+            
+            // Show loading state
+            app.elements.analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+            app.elements.analyzeBtn.disabled = true;
+            app.elements.imageAnalysisResult.style.display = 'block';
+            app.elements.analysisLoading.style.display = 'flex';
+            app.elements.analysisResult.style.display = 'none';
+
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                console.log('Sending image for analysis...');
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Server error:', errorText);
+                    throw new Error(errorText || 'Server error');
+                }
+                
+                const data = await response.json();
+                console.log('Analysis results:', data);
+                
+                if (!data.recipe) {
+                    throw new Error('No recipe data received');
+                }
+                
+                // Display results
+                displayAnalysisResults(data);
+                
+            } catch (error) {
+                console.error('Analysis error:', error);
+                // Show error message
+                app.elements.analysisLoading.innerHTML = `
+                    <div class="error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>${error.message || 'Failed to analyze image'}</p>
+                    </div>
+                `;
+            } finally {
+                app.elements.analyzeBtn.innerHTML = '<i class="fas fa-search"></i> Analyze Image';
+                app.elements.analyzeBtn.disabled = false;
+            }
+        }
+
+        // Display analysis results
+        function displayAnalysisResults(data) {
+            app.elements.analysisLoading.style.display = 'none';
+            app.elements.analysisResult.style.display = 'block';
+            
+            // Set the identified dish
+            app.elements.identifiedDish.textContent = data.recipe['Dish Name'] || 'Unidentified Dish';
+            
+            // Set ingredients
+            app.elements.identifiedIngredients.innerHTML = '';
+            const ingredients = data.recipe['Ingredients'] || '';
+            ingredients.split('\n').forEach(ingredient => {
+                if (ingredient.trim()) {
+                    const li = document.createElement('li');
+                    li.textContent = ingredient.trim().replace(/^- /, '');
+                    app.elements.identifiedIngredients.appendChild(li);
+                }
+            });
+            
+            // Set cooking method (if available)
+            app.elements.cookingMethod.textContent = 
+                data.recipe['Cooking Time'] || 'Time not specified';
+            
+            // Set generated steps
+            app.elements.generatedSteps.innerHTML = '';
+            const instructions = data.recipe['Instructions'] || '';
+            instructions.split('\n').forEach((step, index) => {
+                if (step.trim()) {
+                    const li = document.createElement('li');
+                    li.textContent = step.trim().replace(/^\d+\./, '').trim();
+                    app.elements.generatedSteps.appendChild(li);
+                }
+            });
+            
+            // Set chef's notes
+            app.elements.chefNotes.textContent = 
+                data.recipe['Chef\'s Tips'] || 'No additional notes available';
+            
+            // Show the image if available
+            if (data.image_url) {
+                app.elements.previewImage.src = data.image_url;
+            }
+            
+            // Store the current recipe
+            app.state.currentRecipe = data.recipe;
+            
+            // Show chat toggle
+            app.elements.chatToggle.style.display = 'flex';
+            
+            // Add welcome message to chat
+            addChatMessage('assistant', 'Hello! I can help you with this recipe. Ask me about alternatives or modifications!');
+        }
+
+        // Save the generated recipe from image
+        function saveImageRecipe() {
+            // Get the analyzed recipe data
+            const recipeData = {
+                name: app.elements.identifiedDish.textContent,
+                ingredients: Array.from(app.elements.identifiedIngredients.children)
+                    .map(li => li.textContent).join('\n'),
+                steps: Array.from(app.elements.generatedSteps.children)
+                    .map(li => li.textContent).join('\n'),
+                tips: app.elements.chefNotes.textContent
+            };
+            
+            // Format as standard recipe
+            const recipeText = `
+                1. Name: ${recipeData.name}
+                2. Ingredients: 
+                   ${recipeData.ingredients.split('\n').map(i => `- ${i}`).join('\n                   ')}
+                3. Steps: 
+                   ${recipeData.steps.split('\n').map((s, i) => `${i+1}. ${s}`).join('\n                   ')}
+                4. Time: Unknown
+                5. Difficulty: Unknown
+                6. Chef's tips: ${recipeData.tips}
+            `;
+            
+            // Set as current recipe
+            app.state.currentRecipe = recipeText;
+            
+            // Show success message
+            const saveBtn = app.elements.saveRecipeBtn;
+            saveBtn.innerHTML = '<i class="fas fa-check"></i> Recipe Saved!';
+            saveBtn.style.backgroundColor = 'var(--success)';
+            setTimeout(() => {
+                saveBtn.innerHTML = '<i class="fas fa-save"></i> Save This Recipe';
+                saveBtn.style.backgroundColor = '';
+            }, 2000);
+        }
+
+        // Chat functionality
+        function addChatMessage(sender, message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            messageDiv.innerHTML = formatMessage(message);
+            app.elements.chatMessages.appendChild(messageDiv);
+            app.elements.chatMessages.scrollTop = app.elements.chatMessages.scrollHeight;
+        }
+
+        function formatMessage(text) {
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\n/g, '<br>')
+                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                .replace(/^## (.*$)/gm, '<h2>$2</h2>')
+                .replace(/^- (.*$)/gm, '<li>$1</li>');
+        }
+
+        async function sendMessage() {
+            const message = app.elements.chatInput.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addChatMessage('user', message);
+            app.elements.chatInput.value = '';
+
+            // Show typing indicator
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            `;
+            app.elements.chatMessages.appendChild(typingDiv);
+            app.elements.chatMessages.scrollTop = app.elements.chatMessages.scrollHeight;
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message,
+                        recipe: JSON.stringify(app.state.currentRecipe)
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to get response');
+                }
+                
+                // Remove typing indicator
+                typingDiv.remove();
+                
+                // Add assistant response
+                addChatMessage('assistant', data.response);
+
+            } catch (error) {
+                // Remove typing indicator
+                typingDiv.remove();
+                
+                // Show error message
+                addChatMessage('assistant', `Sorry, I couldn't process your request: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>
