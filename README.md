@@ -17,6 +17,6 @@ Animate.css, Font Awesome – Enhance the UI with smooth animations and a rich s
 **Backend**
 Flask (Python Web Framework) – Powers the backend by managing routing, server-side logic, and communication between the UI and the machine learning model.
 
-**Google Gemini API **– Utilized for intelligent generation of textual content such as dynamic recipe recommendations.
+**Google Gemini API** – Utilized for intelligent generation of textual content such as dynamic recipe recommendations.
 
 **Stable Diffusion (via Hugging Face Diffusers)** – Transforms recipe data into high-quality visual dish images to complement the user experience.
